@@ -9,18 +9,14 @@ import json
 import time
 from prometheus_client import start_http_server, Summary, Gauge
 
-url = os.environ.get('ISUN_MARKETS_URL', "")
-sid = os.environ.get('ISUN_SID', '')
-key = os.environ.get('ISUN_KEY', '')
-secret = os.environ.get('ISUN_SECRET', '')
+url = os.environ.get('ISUN_MARKETS_URL', "https://pub-new.unitex.one")
+sid = os.environ.get('ISUN_SID', '628a9ed9-100d-429d-8baa-3771f747612a')
+key = os.environ.get('ISUN_KEY', '2d8fd882-5dc5-4451-8422-52736e90ac84')
+secret = os.environ.get('ISUN_SECRET', '6c86b656a8c23dded9f474a69e29a91f3ad0574a2f6fc3567162cd5df164c7a7')
 path='/api/v1/wallet/list'
-"""
-gaugeReserved_values = []
-gaugeAvailable_values = []
-gaugeTotal_values = []
-parametrs=['isAvailable','reserved','Total']
-"""
+
 def hmac_value(key,data):
+    #return "3d1cadcfd259dd686e4a817bc70025c7084da26971a84a2ca3c3a05eac23c74e"
     byte_key = bytes(key, 'UTF-8')
     #byte_key = binascii.unhexlify(key)
     h = hmac.new(byte_key, data.encode(), hashlib.sha256)
@@ -41,8 +37,8 @@ def getjson_private(path,sid,key,secret,url,extra_params={}):
     else:return response.json()
     raise Exception ("Invalid status code "+str(response.status_code)+" url:"+url+" message"+str(response.content))
 
-def gauge_reparation(param):
-    return [[i['currencyCode'],i[param]] for i in pre_data['list']]
+def gauge_reparation(param, data):
+    return [[i['currencyCode'],i[param]] for i in data]
 
 def Gauge_parsing(param1,param2):
     return Gauge(param1, param2, labelnames=['currency'])
@@ -58,10 +54,11 @@ if __name__ == '__main__':
     while True:
 
         pre_data=getjson_private(path,sid,key,secret,url)
-        gAvalues = gauge_reparation('isAvailable')#[[i['currencyCode'],i['reserved']] for i in pre_data['list']]
-        gRvalues = gauge_reparation('reserved')#[[i['currencyCode'],i['isAvailable']] for i in pre_data['list']]
+        gAvalues = gauge_reparation('isAvailable', pre_data['list'])
+        gRvalues = gauge_reparation('reserved', pre_data['list'])
         gTvalues = [[i['currencyCode'],i['isAvailable']+i['reserved']] for i in pre_data['list']]
         for C,V in gAvalues:
+            print(C, V)
             gaugeAvailable.labels(C).set(V)
         for C,V in gRvalues:
             gaugeReserved.labels(C).set(V)
