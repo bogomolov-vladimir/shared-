@@ -16,7 +16,6 @@ secret = os.environ.get('ISUN_SECRET', '')
 path='/api/v1/wallet/list'
 
 def hmac_value(key,data):
-    #return "3d1cadcfd259dd686e4a817bc70025c7084da26971a84a2ca3c3a05eac23c74e"
     byte_key = bytes(key, 'UTF-8')
     #byte_key = binascii.unhexlify(key)
     h = hmac.new(byte_key, data.encode(), hashlib.sha256)
