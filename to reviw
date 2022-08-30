@@ -14,9 +14,15 @@ sid = os.environ.get('ISUN_SID', '')
 key = os.environ.get('ISUN_KEY', '')
 secret = os.environ.get('ISUN_SECRET', '')
 path='/api/v1/wallet/list'
-
+"""
+gaugeReserved_values = []
+gaugeAvailable_values = []
+gaugeTotal_values = []
+parametrs=['isAvailable','reserved','Total']
+"""
 def hmac_value(key,data):
     byte_key = bytes(key, 'UTF-8')
+    #byte_key = binascii.unhexlify(key)
     h = hmac.new(byte_key, data.encode(), hashlib.sha256)
     return h.hexdigest()
 
