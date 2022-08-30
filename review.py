@@ -56,8 +56,8 @@ if __name__ == '__main__':
         gAvalues = gauge_reparation('isAvailable', pre_data['list'])
         gRvalues = gauge_reparation('reserved', pre_data['list'])
         gTvalues = [[i['currencyCode'],i['isAvailable']+i['reserved']] for i in pre_data['list']]
-       
-        for C,V in gAvalues: #if changing this loop into def , it stops working
+        #if changing this loop into def , it stops working
+        for C,V in gAvalues: 
             print(C, V)
             gaugeAvailable.labels(C).set(V)
         for C,V in gRvalues:
